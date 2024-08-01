@@ -1,0 +1,26 @@
+local PLUGIN_NAME = "api-transform"
+
+
+-- helper function to validate data against a schema
+local validate do
+  local validate_entity = require("spec.helpers").validate_plugin_config_schema
+  local plugin_schema = require("kong.plugins."..PLUGIN_NAME..".schema")
+
+  function validate(data)
+    return validate_entity(data, plugin_schema)
+  end
+end
+
+
+describe(PLUGIN_NAME .. ": (schema)", function()
+
+  it("Transforming Raw Text to JSON", function()
+    local ok, err = validate({
+        raw_string = ngx.null,
+      })
+    assert.is_falsy(ok)
+    assert.is_table(err)
+    assert.equals('some strings', err.config.raw_string)
+  end)
+
+end)
